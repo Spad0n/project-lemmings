@@ -3,6 +3,7 @@ in pkgs.mkShell {
   nativeBuildInputs = with pkgs; [ pkg-config cmake bear ];
   buildInputs = with pkgs; [
     # for raylib
+    glfw
     xorg.libXrandr
     xorg.libX11
     xorg.libXinerama
