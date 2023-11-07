@@ -2,4 +2,6 @@ compile_commands.json
 .cache
 raylib-src/build
 raylib
-main
+experiment
+2d_camera_platformer
+chase_in_space
