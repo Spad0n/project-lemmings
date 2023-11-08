@@ -2,6 +2,7 @@ compile_commands.json
 .cache
 raylib-src/build
 raylib
-experiment
+glfw3-src/build
+glfw3
 2d_camera_platformer
 chase_in_space
