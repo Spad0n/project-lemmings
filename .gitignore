@@ -6,3 +6,7 @@ glfw3-src/build
 glfw3
 2d_camera_platformer
 chase_in_space
+experiment
+main
+*.so
+*.org
