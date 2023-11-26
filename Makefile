@@ -5,25 +5,19 @@
 # $*: nom d'un fichier sans son suffixe
 
 export PKG_CONFIG_PATH = ./raylib/lib/pkgconfig:./glfw3/lib/pkgconfig:./raylib/lib64/pkgconfig:./glfw3/lib64/pkgconfig
-CFLAGS  := `pkg-config --cflags raylib`
+CFLAGS  := `pkg-config --cflags raylib` -Wall -Wextra
 LDFLAGS := `pkg-config --libs raylib glfw3` -lm -lpthread -ldl
 
-all: raylib glfw 2d_camera_platformer chase_in_space
+all: raylib glfw main
 
-main: src/main.c src/plug.c
-	gcc -g $(CFLAGS) $^ -o $@ $(LDFLAGS)
+main: src/main.c src/plug.c src/xml.c
+	gcc $(CFLAGS) -O3 $^ -o $@ $(LDFLAGS)
 
-debug: src/main.c libplug.so
-	gcc -g $(CFLAGS) -DHOTRELOAD $< -o main $(LDFLAGS)
+debug: src/main.c libplug src/xml.c
+	gcc -g $(CFLAGS) -DHOTRELOAD src/main.c src/xml.c -o main $(LDFLAGS)
 
-libplug.so: src/plug.c
-	gcc $(CFLAGS) -fPIC -shared $< -o $@ $(LDFLAGS)
-
-2d_camera_platformer: src/2d_camera_platformer.c
-	gcc -g $(CFLAGS) $< -o $@ $(LDFLAGS)
-
-chase_in_space: src/chase_in_space.c
-	gcc -g $(CFLAGS) $< -o $@ $(LDFLAGS)
+libplug: src/plug.c
+	gcc $(CFLAGS) -fPIC -shared src/plug.c -o libplug.so $(LDFLAGS)
 
 raylib:
 	mkdir -p ./raylib-src/build

@@ -13,14 +13,17 @@
 #define TILESY SCREEN_HEIGHT/MAP_TILE_SIZE
 
 typedef enum {
-    BLOCK_EMPTY  = 0,
-    BLOCK_MIDDLE = 1 << 0,
-    BLOCK_LEFT   = 1 << 1,
-    BLOCK_TOP    = 1 << 2,
-    BLOCK_RIGHT  = 1 << 3,
-    BLOCK_BOTTOM = 1 << 4,
-    BLOCK_BOX    = 1 << 5,
-    BLOCK_KEY    = 1 << 5 + 1,
+    BLOCK_EMPTY    = 0,
+    BLOCK_MIDDLE   = 1 << 0,
+    BLOCK_LEFT     = 1 << 1,
+    BLOCK_TOP      = 1 << 2,
+    BLOCK_RIGHT    = 1 << 3,
+    BLOCK_BOTTOM   = 1 << 4,
+    BLOCK_COIN     = 1 << 5,
+    BLOCK_KEY      = (1 << 5) + 1,
+    BLOCK_LEVER    = (1 << 5) + 2,
+    BLOCK_S_BRICK  = (1 << 5) + 3,
+    BLOCK_B_BRICK  = (1 << 5) + 4,
 } BlockID;
 
 typedef struct {
@@ -29,12 +32,13 @@ typedef struct {
 } Tile2D;
 
 typedef struct {
-    BlockID tilemap[TILESY][TILESX];
+    int tilemap[TILESY][TILESX];
     Camera2D camera;
     Rectangle rec;
     Vector2 mouse_position;
     Tile2D mouse_tile_pos;
-    bool mouse_state;
+    bool eraser;
+    int block_selected;
     bool show;
 } Plug;
 
