@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "raylib.h"
 #include "raymath.h"
+#include "physic.h"
 
 #define SCREEN_WIDTH 792
 #define SCREEN_HEIGHT 468
@@ -40,12 +41,14 @@ typedef struct {
     bool eraser;
     int block_selected;
     bool show;
+    Player player;
 } Plug;
 
 #define LIST_OF_PLUGS \
     BASE_PLUG(void, plug_init, Plug *plug)				\
+    BASE_PLUG(void, plug_temp, Plug *plug)            \
     BASE_PLUG(void, plug_update, Plug *plug)				\
-    BASE_PLUG(void, plug_render, Plug *plug, Texture2D background, Texture2D demoTile, Texture2D menu)
+    BASE_PLUG(void, plug_render, Plug *plug, Texture2D background, Texture2D demoTile, Texture2D menu, Texture2D player)
 
 #define BASE_PLUG(return_type, name, ...) typedef return_type (name##_t)(__VA_ARGS__);
 LIST_OF_PLUGS

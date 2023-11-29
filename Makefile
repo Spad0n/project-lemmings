@@ -16,8 +16,8 @@ main: src/main.c src/plug.c src/xml.c
 debug: src/main.c libplug src/xml.c
 	gcc -g $(CFLAGS) -DHOTRELOAD src/main.c src/xml.c -o main $(LDFLAGS)
 
-libplug: src/plug.c
-	gcc $(CFLAGS) -fPIC -shared src/plug.c -o libplug.so $(LDFLAGS)
+libplug: src/plug.c src/physic.c
+	gcc $(CFLAGS) -fPIC -shared $^ -o libplug.so $(LDFLAGS)
 
 raylib:
 	mkdir -p ./raylib-src/build

@@ -64,6 +64,7 @@ int main(void) {
     Texture2D background = LoadTexture("./assets/pixel-platformer/Tilemap/newtest.png");
     Texture2D demoTile = LoadTexture("./assets/pixel-platformer/Tilemap/scaled_packed.png");
     Texture2D menu = LoadTexture("./assets/pixel-platformer-blocks/Tilemap/sand_scaled.png");
+    Texture2D player = LoadTexture("./assets/pixel-platformer/Tilemap/tilemap-characters_scaled.png");
 
     SetTargetFPS(60);
 
@@ -96,6 +97,7 @@ int main(void) {
     plug_init(&plug);
 
     while(!WindowShouldClose()) {
+        plug_temp(&plug);
 	plug_update(&plug);
 
 	if (IsKeyPressed(KEY_Z)) plug.camera.zoom = 1.0f;
@@ -131,7 +133,7 @@ int main(void) {
 	    xml_doc_free(&doc);
 	}
 
-	plug_render(&plug, background, demoTile, menu);
+	plug_render(&plug, background, demoTile, menu, player);
     }
 
     UnloadTexture(background);

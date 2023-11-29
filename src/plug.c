@@ -14,6 +14,8 @@
 #define TEXTURE_SMALL_BRICK (Rectangle){288, 0, 36, 36}
 #define TEXTURE_DOOR (Rectangle){360, 198, 36, 54}
 
+#define TEXTURE_PLAYER (Rectangle){0, 0, 48, 48}
+
 void plug_init(Plug *plug) {
 
     plug->camera.zoom = 1.0f;
@@ -33,6 +35,8 @@ void plug_init(Plug *plug) {
     };
 
     plug->block_selected = BLOCK_MIDDLE;
+    
+    player_init(&plug->player, MAP_TILE_SIZE * 2, MAP_TILE_SIZE * 2, true);
 }
 
 void plug_update(Plug *plug) {
@@ -250,7 +254,15 @@ static void draw_selection(Rectangle rec, Texture2D demoTile) {
 
 }
 
-void plug_render(Plug *plug, Texture2D background, Texture2D demoTile, Texture2D menu) {
+void plug_temp(Plug *plug) {
+    
+}
+
+static void draw_player(Plug *plug, Texture2D player) {
+    DrawTextureRec(player, TEXTURE_PLAYER, plug->player.player_position, WHITE);
+}
+
+void plug_render(Plug *plug, Texture2D background, Texture2D demoTile, Texture2D menu, Texture2D player) {
     Drawing {
 	ClearBackground(BLACK);
 	Mode2D(plug->camera) {
@@ -267,6 +279,8 @@ void plug_render(Plug *plug, Texture2D background, Texture2D demoTile, Texture2D
 	//draw_stone_rectangle((Rectangle){SCREEN_WIDTH - (3 * MAP_TILE_SIZE), 0, MAP_TILE_SIZE * 3, SCREEN_HEIGHT}, menu);
 	draw_stone_rectangle(plug->rec, menu);
 	draw_selection(plug->rec, demoTile);
+	
+	draw_player(plug, player);
 
 	DrawText(TextFormat("Mouse coordinate on tile: [%d,%d]", plug->mouse_tile_pos.x, plug->mouse_tile_pos.y), 10, 10, 20, BLACK);
 	DrawText(TextFormat("Mouse coordinate: [%1.f,%1.f]", plug->mouse_position.x, plug->mouse_position.y), 10, 35, 20, BLACK);
