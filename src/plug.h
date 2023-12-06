@@ -46,7 +46,7 @@ typedef struct {
 
 #define LIST_OF_PLUGS \
     BASE_PLUG(void, plug_init, Plug *plug)				\
-    BASE_PLUG(void, plug_temp, Plug *plug)            \
+    BASE_PLUG(void, plug_temp, Plug *plug)				\
     BASE_PLUG(void, plug_update, Plug *plug)				\
     BASE_PLUG(void, plug_render, Plug *plug, Texture2D background, Texture2D demoTile, Texture2D menu, Texture2D player)
 

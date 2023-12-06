@@ -36,7 +36,7 @@ void plug_init(Plug *plug) {
 
     plug->block_selected = BLOCK_MIDDLE;
     
-    player_init(&plug->player, MAP_TILE_SIZE * 2, MAP_TILE_SIZE * 2, true);
+    player_init(&plug->player, MAP_TILE_SIZE * 2, MAP_TILE_SIZE * 2);
 }
 
 void plug_update(Plug *plug) {
@@ -255,7 +255,9 @@ static void draw_selection(Rectangle rec, Texture2D demoTile) {
 }
 
 void plug_temp(Plug *plug) {
-    
+    player_physic_update(&plug->player);
+    player_state_update(plug);
+    player_update(&plug->player);
 }
 
 static void draw_player(Plug *plug, Texture2D player) {
