@@ -4,7 +4,8 @@
 #include <stdbool.h>
 #include "raylib.h"
 #include "raymath.h"
-#include "plug.h"
+
+typedef struct Plug Plug;
 
 typedef struct {
     Vector2 physic_vector;

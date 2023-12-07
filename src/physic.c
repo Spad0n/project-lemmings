@@ -1,4 +1,5 @@
 #include "physic.h"
+#include "plug.h"
 #include <stdio.h>
 
 Physic physic_init () {
@@ -69,22 +70,25 @@ void player_physic_update (Player *player) {
     }
 }
 
+//void player_state_update (Player *player, int tilemap[13][22]) {
 void player_state_update (Plug *plug) {
-    Player *player = &plug->player;
-    if (IsKeyPressed(KEY_I) && player->player_state == STATE_STATIC) {
-        player->player_state = STATE_MOVE_LEFT;
+    if (IsKeyPressed(KEY_I) && plug->player.player_state == STATE_STATIC) {
+        plug->player.player_state = STATE_MOVE_LEFT;
     }
-    else if (IsKeyPressed(KEY_O) && player->player_state == STATE_STATIC) {
-        player->player_state = STATE_MOVE_RIGHT;
+    else if (IsKeyPressed(KEY_O) && plug->player.player_state == STATE_STATIC) {
+        plug->player.player_state = STATE_MOVE_RIGHT;
     }
-    else if (tilemap[plug->player.player_position.v2 + 1][plug->player.player_position.v1] == BLOCK_EMPTY) {
-        player->player_state = STATE_FALL;
+    //else if (tilemap[plug->player.player_position.y + 1][plug->player.player_position.x] == BLOCK_EMPTY) {
+    //    plug->player.player_state = STATE_FALL;
+    //}
+    else if (IsKeyPressed(KEY_K)) {
+	plug->player.player_state = STATE_FALL;
     }
     else if (IsKeyPressed(KEY_L)) {
-        player->player_state = STATE_JUMP;
+        plug->player.player_state = STATE_JUMP;
     }
     else if (IsKeyPressed(KEY_SPACE)) {
-        player->player_state = STATE_STATIC;
+        plug->player.player_state = STATE_STATIC;
     }
 }
 
