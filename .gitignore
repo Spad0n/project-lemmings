@@ -11,3 +11,4 @@ main
 *.so
 *.org
 TAGS
+level.xml
