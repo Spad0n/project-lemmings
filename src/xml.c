@@ -2,7 +2,6 @@
 #include <stddef.h>
 #include <ctype.h>
 
-#define ARRAY_IMPLEMENTATION
 #include "array.h"
 
 XMLNode* xml_node_new(XMLNode *parent) {
