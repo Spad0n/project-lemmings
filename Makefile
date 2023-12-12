@@ -10,13 +10,13 @@ LDFLAGS := `pkg-config --libs raylib glfw3` -lm -lpthread -ldl
 
 all: raylib glfw main
 
-main: src/main.c src/plug.c src/xml.c
-	gcc $(CFLAGS) -O3 $^ -o $@ $(LDFLAGS)
+main: src/main.c src/plug.c src/xml.c src/entity.c src/ui.c src/array.c
+	gcc -g $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
-debug: src/main.c libplug src/xml.c
-	gcc -g $(CFLAGS) -DHOTRELOAD src/main.c src/xml.c -o main $(LDFLAGS)
+debug: src/main.c libplug src/xml.c src/array.c src/entity.c
+	gcc -g $(CFLAGS) -DHOTRELOAD src/main.c src/xml.c src/array.c src/entity.c -o main $(LDFLAGS)
 
-libplug: src/plug.c src/physic.c
+libplug: src/plug.c src/entity.c src/ui.c src/array.c
 	gcc $(CFLAGS) -fPIC -shared $^ -o libplug.so $(LDFLAGS)
 
 raylib:
@@ -45,8 +45,6 @@ clean:
 	rm -rf *.o *~
 
 rmproper: clean
-	rm -rf 2d_camera_platformer
-	rm -rf chase_in_space
 	rm -rf main
 
 reset: rmproper
