@@ -1,6 +1,7 @@
 #include "xml.h"
 #include <stddef.h>
 #include <ctype.h>
+#include <dirent.h>
 
 #include "array.h"
 
@@ -367,4 +368,31 @@ char* xml_attrib_get_value(XMLNode *root, const char *key) {
 	}
     }
     return NULL;
+}
+
+static bool check_xml_ext(const char *filename) {
+    char *dot = strrchr(filename, '.');
+    if (!dot || dot == filename) return false;
+    if (strcmp(dot + 1, "xml") == 0) return true;
+    else return false;
+}
+
+char** xml_get_filepaths(const char *path) {
+    char **paths = array_create_init(2, sizeof(char*));
+    DIR *dir;
+    struct dirent *entry;
+
+    if ((dir = opendir(path)) != NULL) {
+	while ((entry = readdir(dir)) != NULL) {
+	    if (entry->d_type != DT_DIR && check_xml_ext(entry->d_name)) {
+		int size_str = snprintf(NULL, 0, "%s/%s", path, entry->d_name);
+		char *full_path = malloc(size_str + 1);
+		sprintf(full_path, "%s/%s", path, entry->d_name);
+		array_push(paths, full_path);
+	    }
+	}
+    }
+
+    if (dir != NULL) closedir(dir);
+    return paths;
 }

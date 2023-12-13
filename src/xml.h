@@ -33,6 +33,7 @@ typedef struct {
 } XMLDocument;
 
 typedef XMLNode** Array_XMLNode;
+
 typedef XMLAttribute* Array_XMLAttribute;
 
 XMLNode* xml_node_new(XMLNode *parent);
@@ -58,5 +59,7 @@ XMLNode* xml_node_find_tag(XMLNode *root, const char *tagname);
 Array_XMLNode xml_node_find_tags(XMLNode *root, const char *tagname);
 
 char* xml_attrib_get_value(XMLNode *root, const char *key);
+
+char** xml_get_filepaths(const char *path);
 
 #endif // XML_H_
