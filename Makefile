@@ -13,10 +13,10 @@ all: raylib glfw main
 main: src/main.c src/plug.c src/xml.c src/entity.c src/ui.c src/array.c
 	gcc -g $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
-debug: src/main.c libplug src/xml.c src/array.c src/entity.c
+debug: src/main.c libplug
 	gcc -g $(CFLAGS) -DHOTRELOAD src/main.c src/xml.c src/array.c src/entity.c -o main $(LDFLAGS)
 
-libplug: src/plug.c src/entity.c src/ui.c src/array.c
+libplug: src/plug.c src/entity.c src/ui.c src/array.c src/xml.c
 	gcc $(CFLAGS) -fPIC -shared $^ -o libplug.so $(LDFLAGS)
 
 raylib:
