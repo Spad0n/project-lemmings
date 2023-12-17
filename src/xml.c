@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <ctype.h>
 #include <dirent.h>
+#include <sys/stat.h>
 
 #include "array.h"
 
@@ -391,6 +392,12 @@ char** xml_get_filepaths(const char *path) {
 		array_push(paths, full_path);
 	    }
 	}
+    } else {
+	if (mkdir(path, 0777) == -1) {
+	    fprintf(stderr, "Error: Could not create a directory: %s\n", strerror(errno));
+	    exit(1);
+	}
+	return xml_get_filepaths(path);
     }
 
     if (dir != NULL) closedir(dir);

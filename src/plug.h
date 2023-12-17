@@ -8,13 +8,40 @@
 #include "layout.h"
 #include "xml.h"
 
+/**
+ * @def SCREEN_WIDTH
+ * @brief Largeur de l'écran du jeu.
+ */
 #define SCREEN_WIDTH 792
+
+/**
+ * @def SCREEN_HEIGHT
+ * @brief Hauteur de l'écran du jeu.
+ */
 #define SCREEN_HEIGHT 468
+
+/**
+ * @def MAP_TILE_SIZE
+ * @brief Taille d'une tuile dans la carte du jeu.
+ */
 #define MAP_TILE_SIZE 36
 
+/**
+ * @def TILESX
+ * @brief Nombre de tuiles en largeur dans la carte du jeu.
+ */
 #define TILESX SCREEN_WIDTH/MAP_TILE_SIZE
+
+/**
+ * @def TILESY
+ * @brief Nombre de tuiles en hauteur dans la carte du jeu.
+ */
 #define TILESY SCREEN_HEIGHT/MAP_TILE_SIZE
 
+/**
+ * @enum BlockID
+ * @brief Identificateurs des blocs dans la carte du jeu.
+ */
 typedef enum {
     BLOCK_EMPTY    = 0,
     BLOCK_MIDDLE   = 1 << 0,
@@ -31,6 +58,10 @@ typedef enum {
     BLOCK_BRICK    = (1 << 5) + 6,
 } BlockID;
 
+/**
+ * @enum DialogState
+ * @brief États des boîtes de dialogue dans le jeu.
+ */
 typedef enum {
     DIALOG_NONE,
     DIALOG_EDITOR,
@@ -39,32 +70,56 @@ typedef enum {
     DIALOG_PAUSE,
 } DialogState;
 
+/**
+ * @enum GameState
+ * @brief États du jeu.
+ */
 typedef enum {
     EDITOR,
     GAME,
     START_MENU,
 } GameState;
 
+/**
+ * @struct Tile2D
+ * @brief Structure représentant une position 2D en tuiles.
+ */
 typedef struct {
     int x;
     int y;
 } Tile2D;
 
+/**
+ * @union Value
+ * @brief Union représentant une valeur associée à une clé dans une structure Item.
+ */
 typedef union {
     Tile2D entity;
     int block_id;
 } Value;
 
+/**
+ * @enum Key
+ * @brief Clé pour l'union Value dans la structure Item.
+ */
 typedef enum {
     ENTITY,
     BLOCK,
 } Key;
 
+/**
+ * @struct Item
+ * @brief Structure représentant un élément avec une clé et une valeur.
+ */
 typedef struct {
     Value value;
     Key key;
 } Item;
 
+/**
+ * @struct Plug
+ * @brief Structure représentant l'état global du jeu Plug.
+ */
 typedef struct Plug {
     int tilemap[TILESY][TILESX];
     Camera2D camera;
@@ -79,8 +134,8 @@ typedef struct Plug {
     Layout *layouts;
     char **paths;
     size_t level_selected;
-    int attempt;
-    int score;
+    int goal;
+    int score_players;
     int max_coins;
     int coins;
     int bricks;
@@ -91,7 +146,6 @@ typedef struct Plug {
 // Définition de la liste des fonctions plug avec leurs signatures (X macro: https://en.wikipedia.org/wiki/X_macro).
 #define LIST_OF_PLUGS \
     BASE_PLUG(void, plug_init, Plug *plug)				\
-    BASE_PLUG(void, plug_temp, Plug *plug)				\
     BASE_PLUG(void, plug_update, Plug *plug)				\
     BASE_PLUG(void, plug_render, Plug *plug, Texture2D background, Texture2D tileset, Texture2D player, Texture2D player_flop) \
     BASE_PLUG(void, plug_save, Plug *plug, char *file_path)	\

@@ -15,23 +15,14 @@ void entity_update(Plug *plug) {
 	Entity *player = &(plug->players[i]);
 	float dt = GetFrameTime();
 
-	player->velocity.y += G * dt;
+	if (plug->state != EDITOR) {
+	    player->velocity.y += G * dt;
+	}
 
 	//if (player->rect.x > SCREEN_WIDTH || player->rect.x < 0 || player->rect.y < 0 || player->rect.y > SCREEN_HEIGHT) {
 	if (player->rect.x > SCREEN_WIDTH || player->rect.x < 0 || player->rect.y > SCREEN_HEIGHT) {
 	    array_pop_at(plug->players, i);
 	}
-
-	//if (IsKeyPressed(KEY_RIGHT)) {
-	//    player->state = MOVE_RIGHT;
-	//}
-	//if (IsKeyPressed(KEY_LEFT)) {
-	//    player->state = MOVE_LEFT;
-	//}
-
-	//if (IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_RIGHT)) {
-	//	plug->player.state = STATIC;
-	//}
 
 	switch (player->state) {
 	case MOVE_RIGHT:
@@ -70,7 +61,7 @@ void entity_update(Plug *plug) {
 		    };
 
 		    if (CheckCollisionRecs(player->rect, block) && plug->tilemap[y][x] == BLOCK_DOOR) {
-			plug->score += 1;
+			plug->score_players += 1;
 			array_pop_at(plug->players, i);
 			printf("player %ld get the exit !\n", i);
 		    }
@@ -118,7 +109,7 @@ void entity_update(Plug *plug) {
 			player_center.x /= MAP_TILE_SIZE;
 			player_center.y /= MAP_TILE_SIZE;
 
-			if (player_center.x + 1 < TILESX && player_center.x - 1 > 0) {
+			if (player_center.x + 1 < TILESX && player_center.x - 1 >= 0) {
 			    if ((plug->tilemap[player_center.y][player_center.x + 1] == 25 || plug->tilemap[player_center.y][player_center.x + 1] == 17 || plug->tilemap[player_center.y][player_center.x + 1] == 9 || plug->tilemap[player_center.y][player_center.x + 1] == BLOCK_BRICK) && plug->tilemap[player_center.y - 1][player_center.x + 1] != BLOCK_BRICK && player->state == MOVE_RIGHT) {
 				auto_jump = true;
 			    } else if ((plug->tilemap[player_center.y][player_center.x - 1] == 19 || plug->tilemap[player_center.y][player_center.x - 1] == 17 || plug->tilemap[player_center.y][player_center.x - 1] == 3 || plug->tilemap[player_center.y][player_center.x - 1] == BLOCK_BRICK) && plug->tilemap[player_center.y - 1][player_center.x - 1] != BLOCK_BRICK && player->state == MOVE_LEFT) {
@@ -174,7 +165,6 @@ void entity_update(Plug *plug) {
 }
 
 Entity entity_init(int x, int y) {
-//Entity entity_init(Rectangle rec) {
     Entity entity = {
 	.rect = PLAYER_RECT,
 	.velocity = (Vector2){0, 0},

@@ -85,7 +85,6 @@ int main(void) {
     plug_init(&plug);
 
     while(!plug.window_should_close && !WindowShouldClose()) {
-        plug_temp(&plug);
 	plug_update(&plug);
 
 	if (IsKeyPressed(KEY_Z)) plug.camera.zoom = 1.0f;
