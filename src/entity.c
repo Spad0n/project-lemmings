@@ -17,16 +17,17 @@ void entity_update(Plug *plug) {
 
 	player->velocity.y += G * dt;
 
-	if (player->rect.x > SCREEN_WIDTH || player->rect.x < 0 || player->rect.y < 0 || player->rect.y > SCREEN_HEIGHT) {
+	//if (player->rect.x > SCREEN_WIDTH || player->rect.x < 0 || player->rect.y < 0 || player->rect.y > SCREEN_HEIGHT) {
+	if (player->rect.x > SCREEN_WIDTH || player->rect.x < 0 || player->rect.y > SCREEN_HEIGHT) {
 	    array_pop_at(plug->players, i);
 	}
 
-	if (IsKeyPressed(KEY_RIGHT)) {
-	    player->state = MOVE_RIGHT;
-	}
-	if (IsKeyPressed(KEY_LEFT)) {
-	    player->state = MOVE_LEFT;
-	}
+	//if (IsKeyPressed(KEY_RIGHT)) {
+	//    player->state = MOVE_RIGHT;
+	//}
+	//if (IsKeyPressed(KEY_LEFT)) {
+	//    player->state = MOVE_LEFT;
+	//}
 
 	//if (IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_RIGHT)) {
 	//	plug->player.state = STATIC;
@@ -48,9 +49,19 @@ void entity_update(Plug *plug) {
 
 	bool auto_jump = false;
 
+	for (size_t j = 0; j < array_size(plug->players); j++) {
+	    if (CheckCollisionRecs(player->rect, plug->players[j].rect) && j != i) {
+		if (player->rect.x < plug->players[j].rect.x) {
+		    player->state = MOVE_LEFT;
+		} else {
+		    player->state = MOVE_RIGHT;
+		}
+	    }
+	}
+
 	for (size_t y = 0; y < TILESY; y++) {
 	    for (size_t x = 0; x < TILESX; x++) {
-		if (0 < plug->tilemap[y][x] && plug->tilemap[y][x] <= BLOCK_DOOR) {
+		if (0 < plug->tilemap[y][x] && plug->tilemap[y][x] <= BLOCK_BRICK) {
 		    Rectangle block = {
 			.x = MAP_TILE_SIZE * x,
 			.y = MAP_TILE_SIZE * y,
@@ -59,22 +70,26 @@ void entity_update(Plug *plug) {
 		    };
 
 		    if (CheckCollisionRecs(player->rect, block) && plug->tilemap[y][x] == BLOCK_DOOR) {
+			plug->score += 1;
 			array_pop_at(plug->players, i);
 			printf("player %ld get the exit !\n", i);
 		    }
 
 		    if (CheckCollisionRecs(player->rect, block) && plug->tilemap[y][x] == BLOCK_COIN) {
 			plug->tilemap[y][x] = BLOCK_EMPTY;
+			plug->coins++;
 			printf("player %ld get the coin !\n", i);
 		    }
 
 		    if (CheckCollisionRecs(player->rect, block) && plug->tilemap[y][x] == BLOCK_S_BRICK) {
 			plug->tilemap[y][x] = BLOCK_EMPTY;
+			plug->bricks+= 1;
 			printf("player %ld get the small brick !\n", i);
 		    }
 
 		    if (CheckCollisionRecs(player->rect, block) && plug->tilemap[y][x] == BLOCK_B_BRICK) {
 			plug->tilemap[y][x] = BLOCK_EMPTY;
+			plug->bricks += 2;
 			printf("player %ld get the small brick !\n", i);
 		    }
 
@@ -84,11 +99,10 @@ void entity_update(Plug *plug) {
 			printf("player %ld get killed by the spike !\n", i);
 		    }
 
-		    if (CheckCollisionRecs(player->rect, block) && plug->tilemap[y][x] < 32) {
+		    if (CheckCollisionRecs(player->rect, block) && (plug->tilemap[y][x] < 32 || plug->tilemap[y][x] == BLOCK_BRICK)) {
 
 			float overlapX = 0;
 			float overlapY = 0;
-			//Entity *player = plug->player;
 
 			Tile2D player_center = {
 			    .x = (player->rect.x * 2 + player->rect.width) / 2,
@@ -104,17 +118,23 @@ void entity_update(Plug *plug) {
 			player_center.x /= MAP_TILE_SIZE;
 			player_center.y /= MAP_TILE_SIZE;
 
-			if ((plug->tilemap[player_center.y][player_center.x + 1] == 25 || plug->tilemap[player_center.y][player_center.x + 1] == 17) && player->state == MOVE_RIGHT) {
-			    auto_jump = true;
-			} else if ((plug->tilemap[player_center.y][player_center.x - 1] == 19 || plug->tilemap[player_center.y][player_center.x - 1] == 17) && player->state == MOVE_LEFT) {
-			    auto_jump = true;
+			if (player_center.x + 1 < TILESX && player_center.x - 1 > 0) {
+			    if ((plug->tilemap[player_center.y][player_center.x + 1] == 25 || plug->tilemap[player_center.y][player_center.x + 1] == 17 || plug->tilemap[player_center.y][player_center.x + 1] == 9 || plug->tilemap[player_center.y][player_center.x + 1] == BLOCK_BRICK) && plug->tilemap[player_center.y - 1][player_center.x + 1] != BLOCK_BRICK && player->state == MOVE_RIGHT) {
+				auto_jump = true;
+			    } else if ((plug->tilemap[player_center.y][player_center.x - 1] == 19 || plug->tilemap[player_center.y][player_center.x - 1] == 17 || plug->tilemap[player_center.y][player_center.x - 1] == 3 || plug->tilemap[player_center.y][player_center.x - 1] == BLOCK_BRICK) && plug->tilemap[player_center.y - 1][player_center.x - 1] != BLOCK_BRICK && player->state == MOVE_LEFT) {
+				auto_jump = true;
+			    } else if (((plug->tilemap[player_center.y][player_center.x + 1] > 0 && plug->tilemap[player_center.y][player_center.x + 1] < 32) || plug->tilemap[player_center.y][player_center.x + 1] == BLOCK_BRICK) && player->state == MOVE_RIGHT) {
+				player->state = MOVE_LEFT;
+			    } else if (((plug->tilemap[player_center.y][player_center.x - 1] > 0 && plug->tilemap[player_center.y][player_center.x - 1] < 32) || plug->tilemap[player_center.y][player_center.x - 1] == BLOCK_BRICK) && player->state == MOVE_LEFT) {
+				player->state = MOVE_RIGHT;
+			    }
 			}
 
-			if (plug->tilemap[player_center.y][player_center.x + 1] == 29 && player->state == MOVE_RIGHT) {
-			    player->state = MOVE_LEFT;
-			} else if (plug->tilemap[player_center.y][player_center.x - 1] == 23 && player->state == MOVE_LEFT) {
-			    player->state = MOVE_RIGHT;
-			}
+			//if (plug->tilemap[player_center.y][player_center.x + 1] == 29 && player->state == MOVE_RIGHT) {
+			//    player->state = MOVE_LEFT;
+			//} else if (plug->tilemap[player_center.y][player_center.x - 1] == 23 && player->state == MOVE_LEFT) {
+			//    player->state = MOVE_RIGHT;
+			//}
 
 			// check overlap
 			if (player->rect.x < block.x) {
@@ -142,9 +162,13 @@ void entity_update(Plug *plug) {
 	    }
 	}
 
-	if ((IsKeyDown(KEY_SPACE) && player->on_ground) || (player->on_ground && auto_jump)) {
+	//if ((IsKeyDown(KEY_SPACE) && player->on_ground) || (player->on_ground && auto_jump)) {
+	//    player->velocity.y -= PLAYER_JUMP_SPD * dt;
+	//    //plug->player.delai = 35;
+	//}
+
+	if (player->on_ground && auto_jump) {
 	    player->velocity.y -= PLAYER_JUMP_SPD * dt;
-	    //plug->player.delai = 35;
 	}
     }
 }

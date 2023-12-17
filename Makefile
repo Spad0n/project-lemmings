@@ -5,18 +5,18 @@
 # $*: nom d'un fichier sans son suffixe
 
 export PKG_CONFIG_PATH = ./raylib/lib/pkgconfig:./glfw3/lib/pkgconfig:./raylib/lib64/pkgconfig:./glfw3/lib64/pkgconfig
-CFLAGS  := `pkg-config --cflags raylib` -Wall -Wextra
+CFLAGS  := `pkg-config --cflags raylib` -Wall -Wextra -Wno-unused-result -std=gnu99
 LDFLAGS := `pkg-config --libs raylib glfw3` -lm -lpthread -ldl
 
 all: raylib glfw main
 
-main: src/main.c src/plug.c src/xml.c src/entity.c src/ui.c src/array.c
+main: src/main.c src/plug.c src/xml.c src/entity.c src/layout.c src/array.c
 	gcc -g $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 debug: src/main.c libplug
-	gcc -g $(CFLAGS) -DHOTRELOAD src/main.c src/xml.c src/array.c src/entity.c -o main $(LDFLAGS)
+	gcc -g $(CFLAGS) -DHOTRELOAD src/main.c -o main $(LDFLAGS)
 
-libplug: src/plug.c src/entity.c src/ui.c src/array.c src/xml.c
+libplug: src/plug.c src/entity.c src/layout.c src/array.c src/xml.c
 	gcc $(CFLAGS) -fPIC -shared $^ -o libplug.so $(LDFLAGS)
 
 raylib:

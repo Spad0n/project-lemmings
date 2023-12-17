@@ -5,7 +5,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "entity.h"
-#include "ui.h"
+#include "layout.h"
 #include "xml.h"
 
 #define SCREEN_WIDTH 792
@@ -28,13 +28,21 @@ typedef enum {
     BLOCK_S_BRICK  = (1 << 5) + 3,
     BLOCK_B_BRICK  = (1 << 5) + 4,
     BLOCK_DOOR     = (1 << 5) + 5,
+    BLOCK_BRICK    = (1 << 5) + 6,
 } BlockID;
+
+typedef enum {
+    DIALOG_NONE,
+    DIALOG_EDITOR,
+    DIALOG_SELECT,
+    DIALOG_GAME,
+    DIALOG_PAUSE,
+} DialogState;
 
 typedef enum {
     EDITOR,
     GAME,
     START_MENU,
-    QUIT_MENU,
 } GameState;
 
 typedef struct {
@@ -60,7 +68,6 @@ typedef struct {
 typedef struct Plug {
     int tilemap[TILESY][TILESX];
     Camera2D camera;
-    //Rectangle rec;
     Vector2 mouse_position;
     Tile2D mouse_tile_pos;
     bool eraser;
@@ -68,21 +75,33 @@ typedef struct Plug {
     bool show;
     Entity *players;
     GameState state;
+    DialogState dialog;
     Layout *layouts;
     char **paths;
+    size_t level_selected;
+    int attempt;
+    int score;
+    int max_coins;
+    int coins;
+    int bricks;
+    size_t page;
     bool window_should_close;
 } Plug;
 
+// Définition de la liste des fonctions plug avec leurs signatures (X macro: https://en.wikipedia.org/wiki/X_macro).
 #define LIST_OF_PLUGS \
     BASE_PLUG(void, plug_init, Plug *plug)				\
     BASE_PLUG(void, plug_temp, Plug *plug)				\
     BASE_PLUG(void, plug_update, Plug *plug)				\
-    BASE_PLUG(void, plug_render, Plug *plug, Texture2D background, Texture2D demoTile, Texture2D player, Texture2D menu) \
-    BASE_PLUG(void, plug_save, Plug *plug)				\
+    BASE_PLUG(void, plug_render, Plug *plug, Texture2D background, Texture2D tileset, Texture2D player, Texture2D player_flop) \
+    BASE_PLUG(void, plug_save, Plug *plug, char *file_path)	\
     BASE_PLUG(void, plug_free, Plug *plug)
 
+// définition de chaque fonction de plug comme un type de fonction avec le préfixe '_t'
 #define BASE_PLUG(return_type, name, ...) typedef return_type (name##_t)(__VA_ARGS__);
+// expansion de la liste des fonctions plug pour générer les types de fonction correspondants
 LIST_OF_PLUGS
+// suppression de la définition de la macro BASE_PLUG pour eviter toute collision de nom
 #undef BASE_PLUG
 
 #endif // PLUG_H_
