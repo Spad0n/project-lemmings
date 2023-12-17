@@ -46,6 +46,7 @@ clean:
 
 rmproper: clean
 	rm -rf main
+	rm -rf libplug.so
 
 reset: rmproper
 	rm -rf ./raylib
