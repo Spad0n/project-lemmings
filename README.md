@@ -10,10 +10,12 @@ $ make
 
 ## Controls (QWERTY layout)
 
-| E | activate/deactivate eraser             |
-| A | show dialog in both editor and game    |
-| T | toggle item menu (only in editor mode) |
-| D | delete all tiles (only in editor mode) |
+| keyboard | action                                 |
+|----------|----------------------------------------|
+| E        | activate/deactivate eraser             |
+| A        | show dialog in both editor and game    |
+| T        | toggle item menu (only in editor mode) |
+| D        | delete all tiles (only in editor mode) |
 
 ## Hotreload
 
