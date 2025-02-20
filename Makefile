@@ -4,52 +4,41 @@
 # $?: liste des dépendances plus récentes que la cible
 # $*: nom d'un fichier sans son suffixe
 
-export PKG_CONFIG_PATH = ./raylib/lib/pkgconfig:./glfw3/lib/pkgconfig:./raylib/lib64/pkgconfig:./glfw3/lib64/pkgconfig
+export PKG_CONFIG_PATH = ./raylib/lib/pkgconfig:./raylib/lib64/pkgconfig
 CFLAGS  := `pkg-config --cflags raylib` -Wall -Wextra -Wno-unused-result -std=gnu99
-LDFLAGS := `pkg-config --libs raylib glfw3` -lm -lpthread -ldl
+LDFLAGS := `pkg-config --libs raylib` -lm -lpthread -ldl -lglfw '-Wl,-rpath,./raylib/lib:./raylib/lib64:'
 
-all: raylib glfw main
+all: main
 
-main: src/main.c src/plug.c src/xml.c src/entity.c src/layout.c src/array.c
-	gcc -g $(CFLAGS) $^ -o $@ $(LDFLAGS)
+MAIN_SRCS := src/main.c src/plug.c src/xml.c src/entity.c src/layout.c src/array.c
+DEBUG_SRCS := src/plug.c src/entity.c src/layout.c src/array.c src/xml.c
+
+main: $(MAIN_SRCS) raylib
+	gcc -g $(CFLAGS) $(MAIN_SRCS) -o $@ $(LDFLAGS)
 
 debug: src/main.c libplug
 	gcc -g $(CFLAGS) -DHOTRELOAD src/main.c -o main $(LDFLAGS)
 
-libplug: src/plug.c src/entity.c src/layout.c src/array.c src/xml.c
-	gcc $(CFLAGS) -fPIC -shared $^ -o libplug.so $(LDFLAGS)
+libplug: $(DEBUG_SRCS) raylib-shared
+	gcc $(CFLAGS) -fPIC -shared $(DEBUG_SRCS) -o libplug.so $(LDFLAGS)
 
 raylib:
 	mkdir -p ./raylib-src/build
 	mkdir -p ./raylib
-	cmake -B raylib-src/build -DCMAKE_INSTALL_PREFIX=./raylib raylib-src
+	cmake -B raylib-src/build -DCMAKE_INSTALL_PREFIX=./raylib -DCUSTOMIZE_BUILD=ON -DUSE_EXTERNAL_GLFW=ON raylib-src
 	$(MAKE) -j4 install -C ./raylib-src/build
 	rm -rf ./raylib-src/build
 
 raylib-shared:
 	mkdir -p ./raylib-src/build
 	mkdir -p ./raylib
-	cmake -B raylib-src/build -DCMAKE_INSTALL_PREFIX=./raylib -DBUILD_SHARED_LIBS=ON raylib-src
+	cmake -B raylib-src/build -DCMAKE_INSTALL_PREFIX=./raylib -DCUSTOMIZE_BUILD=ON -DUSE_EXTERNAL_GLFW=ON -DBUILD_SHARED_LIBS=ON raylib-src
 	$(MAKE) -j4 install -C ./raylib-src/build
 	rm -rf ./raylib-src/build
 
-glfw:
-	mkdir -p ./glfw3-src/build
-	mkdir -p ./glfw3
-	cmake -B glfw3-src/build -DCMAKE_INSTALL_PREFIX=./glfw3 glfw3-src
-	$(MAKE) -j4 install -C ./glfw3-src/build
-	rm -rf ./glfw3-src/build
-
-
 clean:
-	rm -rf *.o *~
+	rm -rf *.o *~ libplug.so main
 
-rmproper: clean
-	rm -rf main
-	rm -rf libplug.so
-
-reset: rmproper
+reset: clean
 	rm -rf ./raylib
-	rm -rf ./glfw3
 	rm -rf ./raylib-src/build
-	rm -rf ./glfw3-src/build
